@@ -14,3 +14,9 @@ Analytical and data-cleaning decisions taken during the project, with the reason
 | 8 | When an order has several reviews, keep the most recent one. | It reflects the customer's final opinion. Removes 551 duplicate reviews (one review per order). |
 | 9 | Order value = items price + freight, in Brazilian reais (BRL). | It is what the customer actually paid, so it is the right basis for revenue and CLV. Currency is not converted. |
 | 10 | Product category: English name, else Portuguese name, else `unknown`. | Using `LEFT JOIN` + `COALESCE` keeps every item sold, even without a translation or category, instead of silently dropping rows. |
+| 11 | Cohort = month of the customer's first delivered order. Retention in month k = % of the cohort with at least one order k calendar months later. | Standard monthly cohort definition; counting distinct customers (not orders) measures whether people come back, not how much they buy. |
+| 12 | Months not yet observable for a cohort are left out of the retention table (blank), not shown as 0%. Overall curves weight each month only by cohorts that can be observed. | The analysis period ends in 2018-08, so recent cohorts have had less time to return. Treating "not yet observed" as "did not return" would bias retention downwards. |
+
+## Open questions
+
+- **Same-month repeat orders.** About 3,100 repeat orders exist, but only ~1,800 returns happen in month 1 or later, so many repeat orders fall in the same month as the first purchase. Check whether these are genuine returns or one shopping session split into several orders (e.g. same day), which would mean the true repeat rate is even lower.
