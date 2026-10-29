@@ -17,6 +17,8 @@ Analytical and data-cleaning decisions taken during the project, with the reason
 | 11 | Cohort = month of the customer's first delivered order. Retention in month k = % of the cohort with at least one order k calendar months later. | Standard monthly cohort definition; counting distinct customers (not orders) measures whether people come back, not how much they buy. |
 | 12 | Months not yet observable for a cohort are left out of the retention table (blank), not shown as 0%. Overall curves weight each month only by cohorts that can be observed. | The analysis period ends in 2018-08, so recent cohorts have had less time to return. Treating "not yet observed" as "did not return" would bias retention downwards. |
 
-## Open questions
+| 13 | A **genuine repeat purchase** is an order placed on a different day from all the customer's previous orders. Orders by the same customer on the same day count as one purchase occasion (`purchase_occasion_seq`). | Of customers with a second order, 29.7% placed it the same day as the first, versus only 7.1% in the following 1-7 days. Of those same-day pairs, 88.9% were placed within 10 minutes and 96.1% within 1 hour: one basket split into several orders, not a returning customer. With this definition the repeat rate falls from 3.1% to **2.15%**. Cohort retention (months 1+) is unaffected. |
 
-- **Same-month repeat orders.** About 3,100 repeat orders exist, but only ~1,800 returns happen in month 1 or later, so many repeat orders fall in the same month as the first purchase. Check whether these are genuine returns or one shopping session split into several orders (e.g. same day), which would mean the true repeat rate is even lower.
+## Resolved questions
+
+- **Same-month repeat orders** (raised during cohort analysis): many "repeat" orders fell in the same month as the first purchase. Resolved by decision 13: they are mostly split baskets placed minutes apart.

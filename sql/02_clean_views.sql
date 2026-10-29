@@ -94,8 +94,14 @@ LEFT JOIN raw.category_translation t
 -- order value (BRL), review score and the order's position in
 -- the customer's purchase history (customer_order_seq).
 -- Items are aggregated BEFORE joining to avoid duplicating orders.
+-- purchase_occasion_seq groups orders placed by the same customer
+-- on the same day into one purchase occasion: 89% of same-day
+-- "repeat" orders are placed within 10 minutes of each other
+-- (one basket split into several orders). A genuine repeat
+-- purchase is purchase_occasion_seq > 1.
 -- Check: 96,203 orders | 95,560 with review | avg value 159.78 BRL
 --        | 3,107 repeat orders (= 96,203 orders - 93,096 customers)
+--        | 2.15% of customers make a genuine repeat purchase
 -- -------------------------------------------------------------
 CREATE VIEW clean.order_facts AS
 WITH item_totals AS (
@@ -124,7 +130,11 @@ SELECT o.order_id,
        ROW_NUMBER() OVER (
            PARTITION BY o.customer_unique_id
            ORDER BY o.purchased_at
-       ) AS customer_order_seq
+       ) AS customer_order_seq,
+       DENSE_RANK() OVER (
+           PARTITION BY o.customer_unique_id
+           ORDER BY o.purchase_date
+       ) AS purchase_occasion_seq
 FROM clean.orders o
 JOIN item_totals it             ON it.order_id = o.order_id
 LEFT JOIN clean.order_reviews r ON r.order_id = o.order_id;
