@@ -19,6 +19,9 @@ Analytical and data-cleaning decisions taken during the project, with the reason
 
 | 13 | A **genuine repeat purchase** is an order placed on a different day from all the customer's previous orders. Orders by the same customer on the same day count as one purchase occasion (`purchase_occasion_seq`). | Of customers with a second order, 29.7% placed it the same day as the first, versus only 7.1% in the following 1-7 days. Of those same-day pairs, 88.9% were placed within 10 minutes and 96.1% within 1 hour: one basket split into several orders, not a returning customer. With this definition the repeat rate falls from 3.1% to **2.15%**. Cohort retention (months 1+) is unaffected. |
 
+| 14 | RFM adapted to a low-repeat business: R and M scored 1-5 by quintile (`NTILE(5)`), F treated as binary (repeat / no repeat). Reference date 2018-09-01. | With 97.85% of customers having one purchase occasion, a 1-5 F score would give almost everyone the same value. Quintiles (not fixed BRL bands) are used for M because spend is heavily right-skewed (mean 165 vs median 108 BRL; max 13,664). |
+| 15 | Seven segments: repeat customers split by recency (R ≥ 4 = active); one-time customers split by recency (R ≥ 4 new, R 2-3 slipping/fading, R 1 lost) and value (M ≥ 4 high). | Simple, explainable rules that map to different business actions (convert, reactivate, let go), instead of the classic 11 RFM segments that assume meaningful frequency. |
+
 ## Resolved questions
 
 - **Same-month repeat orders** (raised during cohort analysis): many "repeat" orders fell in the same month as the first purchase. Resolved by decision 13: they are mostly split baskets placed minutes apart.
